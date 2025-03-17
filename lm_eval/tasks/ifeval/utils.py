@@ -1,5 +1,6 @@
 import dataclasses
 from typing import Dict, Optional, Union
+import re
 
 from lm_eval.tasks.ifeval import instructions_registry
 
@@ -116,6 +117,9 @@ def process_results(doc, results):
         kwargs=doc["kwargs"],
     )
     response = results[0]
+    
+    # Reasoning models modification : Remove the thinking part
+    response = re.sub(r".*?<\/think>(\\n)*", "", response, flags=re.DOTALL).strip()
 
     out_strict = test_instruction_following_strict(inp, response)
     out_loose = test_instruction_following_loose(inp, response)
